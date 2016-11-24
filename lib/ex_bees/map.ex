@@ -24,9 +24,8 @@ defmodule ExBees.Map do
 
   def put(map, {x, y}, entity) do
     Agent.update(map, fn(m) ->
-      row = Enum.at(m, y)
-      new_row = List.replace_at(row, x, entity)
-      List.replace_at(m, y, new_row)
+      row = m |> Enum.at(y) |> List.replace_at(x, entity)
+      List.replace_at(m, y, row)
     end)
   end
 end
