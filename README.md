@@ -25,3 +25,10 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
     end
     ```
 
+## Domain area
+
+* World - a map, for simplicity square, that contains all kinds of objects.
+* Bee - Autonomous Drone Insect
+* Honeycomb - spawnpoint for bees, warehouse for honey
+* Flower - temporary point, that can hold single bee for specified amount of time
+* Trap - danger point, that destroys a bee
