@@ -14,7 +14,8 @@ defmodule ExBees.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    [applications: [:logger]]
+    [mod: {ExBees, []},
+     applications: [:logger, :cowboy, :plug]]
   end
 
   # Dependencies can be Hex packages:
@@ -27,6 +28,7 @@ defmodule ExBees.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    []
+    [{:cowboy, "~> 1.0"},
+     {:plug, "~> 1.2"}]
   end
 end
