@@ -1,23 +1,25 @@
 defmodule ExBees.Bee do
   use GenServer
 
-  defstruct honey: 0
+  defstruct name: nil, honey: 0
 
   @tick_period 1000
 
   def start_link(name) do
-    GenServer.start_link(__MODULE__, :ok, name: name)
+    GenServer.start_link(__MODULE__, name, name: name)
   end
 
   # Callbacks
   
-  def init(:ok) do
-    {:ok, %ExBees.Bee{}}
+  def init(name) do
+    tick()
+    {:ok, %ExBees.Bee{name: name}}
   end
 
   def handle_info(:tick, state) do
     # TODO: move bee
-    IO.puts "#{self()} moving"
+    IO.puts "#{state.name} moving"
+    tick()
     {:noreply, state}
   end
 
