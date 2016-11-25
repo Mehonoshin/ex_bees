@@ -1,6 +1,5 @@
 defmodule ExBees.WorldSupervisor do
   use Supervisor
-  alias ExBees.Map
 
   def start_link(name) do
     Supervisor.start_link(__MODULE__, :ok, name: name)
@@ -8,7 +7,8 @@ defmodule ExBees.WorldSupervisor do
 
   def init(:ok) do
     children = [
-      worker(Map, [ExBees.Map])
+      worker(ExBees.Map, [ExBees.Map]),
+      worker(ExBees.HoneycombRegistry, [ExBees.HoneycombRegistry])
     ]
 
     supervise(children, strategy: :one_for_one)
