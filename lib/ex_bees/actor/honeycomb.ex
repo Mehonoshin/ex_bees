@@ -1,10 +1,12 @@
 defmodule ExBees.Honeycomb do
   use GenServer
 
+  defstruct name: nil, bees: [], honey: 0
+
   # Client API
 
   def start_link(name) do
-    GenServer.start_link(__MODULE__, :ok, name: name)
+    GenServer.start_link(__MODULE__, name, name: name)
   end
 
   def bee_destroyed(server) do
@@ -13,16 +15,22 @@ defmodule ExBees.Honeycomb do
 
   # Server callbacks
 
-  def init(:ok) do
-    {:ok, []}
+  def init(name) do
+    state = %ExBees.Honeycomb{name: name} 
+
+    bees_number = Application.get_env(:ex_bees, :bees_per_honeycomb)
+    initial_bees = for i <- 1..bees_number do
+      spawn_bee(i, state)
+    end
+
+    {:ok, %{state | bees: initial_bees}}
   end
 
   def handle_cast(:bee_destroyed, state) do
-    state = spawn_bee(state)
     {:noreply, state}
   end
 
-  defp spawn_bee(state) do
-    IO.puts "Spawning new bee! Bees: #{inspect state}"
+  defp spawn_bee(index, state) do
+    "Bee.#{state.name}.#{index}" |> String.to_atom |> ExBees.Bee.start_link()
   end
 end

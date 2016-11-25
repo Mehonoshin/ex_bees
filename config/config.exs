@@ -3,4 +3,5 @@
 use Mix.Config
 
 config :ex_bees,
-  honeycombs_number: 3
+  honeycombs_number: 3,
+  bees_per_honeycomb: 10
