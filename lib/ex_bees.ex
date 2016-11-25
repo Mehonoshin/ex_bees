@@ -5,7 +5,8 @@ defmodule ExBees do
     import Supervisor.Spec
 
     children = [
-      Plug.Adapters.Cowboy.child_spec(:http, Web.Router, [], [port: 4000])
+      Plug.Adapters.Cowboy.child_spec(:http, Web.Router, [], [port: 4000]),
+      supervisor(ExBees.WorldSupervisor, [ExBees.WorldSupervisor])
     ]
 
     opts = [strategy: :one_for_one, name: ExBees.Supervisor]

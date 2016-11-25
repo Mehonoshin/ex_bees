@@ -2,12 +2,8 @@ defmodule ExBees.Map do
   alias ExBees.Point
 
   # TODO: define dynamic map size
-  def start_link do
-    Agent.start_link(fn -> [
-      [Point.empty, Point.bee, Point.empty],
-      [Point.empty, Point.empty, Point.empty],
-      [Point.empty, Point.empty, Point.empty]
-    ] end)
+  def start_link(name) do
+    Agent.start_link(&initialize_map/0, name: name)
   end
 
   def all(map) do
@@ -27,5 +23,13 @@ defmodule ExBees.Map do
       row = m |> Enum.at(y) |> List.replace_at(x, entity)
       List.replace_at(m, y, row)
     end)
+  end
+
+  defp initialize_map do
+    [
+      [Point.empty, Point.bee, Point.empty],
+      [Point.empty, Point.empty, Point.empty],
+      [Point.empty, Point.empty, Point.empty]
+    ]
   end
 end
