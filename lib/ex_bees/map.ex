@@ -26,10 +26,18 @@ defmodule ExBees.Map do
   end
 
   defp initialize_map do
-    [
-      [Point.empty, Point.bee, Point.empty],
-      [Point.empty, Point.empty, Point.empty],
-      [Point.empty, Point.empty, Point.empty]
-    ]
+    for y <- 1..map_height do
+      for x <- 1..map_width do
+        Point.empty
+      end
+    end
+  end
+
+  def map_width do
+    Application.get_env(:ex_bees, :map_width)
+  end
+
+  def map_height do
+    Application.get_env(:ex_bees, :map_height)
   end
 end
