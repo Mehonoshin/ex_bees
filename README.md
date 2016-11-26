@@ -32,3 +32,6 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
 * Honeycomb - spawnpoint for bees, warehouse for honey
 * Flower - temporary point, that can hold single bee for specified amount of time
 * Trap - danger point, that destroys a bee
+
+## Implentation
+TBD
