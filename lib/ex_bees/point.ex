@@ -8,4 +8,8 @@ defmodule ExBees.Point do
   def bee do
     %ExBees.Point{type: :bee}
   end
+
+  def point do
+    %ExBees.Point{type: :honeycomb}
+  end
 end
