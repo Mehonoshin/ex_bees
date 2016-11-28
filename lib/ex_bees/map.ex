@@ -27,9 +27,7 @@ defmodule ExBees.Map do
 
   defp initialize_map do
     for y <- 1..map_height do
-      for x <- 1..map_width do
-        Point.empty
-      end
+      for x <- 1..map_width, do: Point.empty
     end
   end
 
