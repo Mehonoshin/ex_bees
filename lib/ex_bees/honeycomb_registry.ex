@@ -7,10 +7,6 @@ defmodule ExBees.HoneycombRegistry do
     GenServer.start_link(__MODULE__, hc_number, name: name)
   end
 
-  def create do
-    GenServer.call(ExBees.HoneycombRegistry, :create_honeycomb)
-  end
-
   # Callbacks
 
   def init(hc_number) do
@@ -18,14 +14,6 @@ defmodule ExBees.HoneycombRegistry do
       "Honeycomb.#{i}" |> String.to_atom |> start_honeycomb
     end
     {:ok, state}
-  end
-
-  def handle_call(:create_honeycomb, _from, state) do
-    {:reply, :ok, ["Honeycomb #{Enum.count(state)}" | state]}
-  end
-
-  def handle_call(:list, state) do
-    {:noreply, state, state}
   end
 
   defp start_honeycomb(name) do

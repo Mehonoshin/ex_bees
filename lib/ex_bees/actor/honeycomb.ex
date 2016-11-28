@@ -1,7 +1,7 @@
 defmodule ExBees.Honeycomb do
   use GenServer
 
-  defstruct name: nil, bees: [], honey: 0
+  defstruct name: nil, bees: [], honey: 0, position: {0, 0}
 
   # Client API
 
@@ -16,7 +16,9 @@ defmodule ExBees.Honeycomb do
   # Server callbacks
 
   def init(name) do
-    state = %ExBees.Honeycomb{name: name} 
+    # TODO: Use name instead of pid
+    position = ExBees.Map.allocate(ExBees.Map, self(), :honeycomb)
+    state = %ExBees.Honeycomb{name: name, position: position} 
 
     bees_number = Application.get_env(:ex_bees, :bees_per_honeycomb)
     initial_bees = for i <- 1..bees_number do

@@ -18,7 +18,7 @@ defmodule ExBees.Bee do
 
   def handle_info(:tick, state) do
     # TODO: move bee
-    IO.puts "#{state.name} moving"
+    #IO.puts "#{state.name} moving"
     tick()
     {:noreply, state}
   end
