@@ -4,6 +4,7 @@ defmodule ExBees.Bee do
   defstruct name: nil, honey: 0, position: {0, 0}
 
   @tick_period 1000
+  @directions [:left_up, :up, :right_up, :left, :right, :left_down, :down, :right_down]
 
   def start_link(name, position) do
     GenServer.start_link(__MODULE__, {name, position}, name: name)
@@ -18,13 +19,21 @@ defmodule ExBees.Bee do
   end
 
   def handle_info(:tick, state) do
-    # TODO: move bee
-    IO.puts "#{state.name} moving, position is: #{inspect state.position}"
+    move(state)
     tick()
     {:noreply, state}
   end
 
+  defp move(state) do
+    movement = Enum.at(@directions, pick_direction - 1)
+    IO.puts "#{state.name} moving, move to #{inspect movement}"
+  end
+
   defp tick() do
     Process.send_after(self(), :tick, @tick_period)
+  end
+
+  defp pick_direction do
+    @directions |> Enum.count |> :rand.uniform
   end
 end
