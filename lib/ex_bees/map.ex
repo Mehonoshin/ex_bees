@@ -17,6 +17,10 @@ defmodule ExBees.Map do
       |> Enum.shuffle
       |> Enum.at(0)
     position = point.position
+    allocate(map, pid, type, position)
+  end
+
+  def allocate(map, pid, type, position) do
     put(map, %ExBees.Point{type: type, actor: pid, position: position})
     position
   end
