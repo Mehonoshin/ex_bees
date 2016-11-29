@@ -10,13 +10,7 @@ defmodule ExBees.Map do
   end
 
   def allocate(map, pid, type) do
-    # TODO: rewrite if faster
-    point = all(map)
-      |> List.flatten
-      |> Enum.filter(fn(point) -> point.type == :empty end)
-      |> Enum.shuffle
-      |> Enum.at(0)
-    position = point.position
+    position = pick_random_position(map)
     allocate(map, pid, type, position)
   end
 
@@ -38,6 +32,16 @@ defmodule ExBees.Map do
       row = m |> Enum.at(y) |> List.replace_at(x, entity)
       List.replace_at(m, y, row)
     end)
+  end
+
+  defp pick_random_position(map) do
+    position = {:rand.uniform(map_width - 1), :rand.uniform(map_height - 1)}
+    case get(map, position) do
+      %ExBees.Point{type: :empty} ->
+        position
+      _ ->
+        pick_random_position(map)
+    end
   end
 
   defp initialize_map do

@@ -18,6 +18,7 @@ defmodule ExBees.Honeycomb do
   def init(name) do
     # TODO: Use name instead of pid
     position = ExBees.Map.allocate(ExBees.Map, self(), :honeycomb)
+    IO.puts "Allocate #{inspect name} at #{inspect position}"
     state = %ExBees.Honeycomb{name: name, position: position} 
 
     bees_number = Application.get_env(:ex_bees, :bees_per_honeycomb)
