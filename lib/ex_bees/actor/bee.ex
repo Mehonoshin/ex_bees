@@ -19,14 +19,57 @@ defmodule ExBees.Bee do
   end
 
   def handle_info(:tick, state) do
-    move(state)
+    state = move(state)
     tick()
     {:noreply, state}
   end
 
   defp move(state) do
     movement = Enum.at(@directions, pick_direction - 1)
-    IO.puts "#{state.name} moving, move to #{inspect movement}"
+
+    position = gen_new_position(state.position, movement)
+    if legal_position?(position) do
+      state = %{state | position: position}
+      ExBees.Map.put(ExBees.Map, state)
+    end
+    state
+  end
+
+  defp gen_new_position({x, y}, :left_up) do
+    {x - 1, y - 1}
+  end
+
+  defp gen_new_position({x, y}, :up) do
+    {x, y - 1}
+  end
+
+  defp gen_new_position({x, y}, :right_up) do
+    {x + 1, y - 1}
+  end
+
+  defp gen_new_position({x, y}, :left) do
+    {x - 1, y}
+  end
+
+  defp gen_new_position({x, y}, :right) do
+    {x + 1, y}
+  end
+
+  defp gen_new_position({x, y}, :left_down) do
+    {x - 1, y + 1}
+  end
+
+  defp gen_new_position({x, y}, :down) do
+    {x, y + 1}
+  end
+
+  defp gen_new_position({x, y}, :right_down) do
+    {x + 1, y + 1}
+  end
+
+
+  defp legal_position?({x, y}) do
+    x >= 0 && x < ExBees.Map.map_width && y >= 0 && y < ExBees.Map.map_height
   end
 
   defp tick() do

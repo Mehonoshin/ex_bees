@@ -34,6 +34,14 @@ defmodule ExBees.Map do
     end)
   end
 
+  def map_width do
+    Application.get_env(:ex_bees, :map_width)
+  end
+
+  def map_height do
+    Application.get_env(:ex_bees, :map_height)
+  end
+
   defp pick_random_position(map) do
     position = {:rand.uniform(map_width - 1), :rand.uniform(map_height - 1)}
     case get(map, position) do
@@ -50,11 +58,4 @@ defmodule ExBees.Map do
     end
   end
 
-  defp map_width do
-    Application.get_env(:ex_bees, :map_width)
-  end
-
-  defp map_height do
-    Application.get_env(:ex_bees, :map_height)
-  end
 end
