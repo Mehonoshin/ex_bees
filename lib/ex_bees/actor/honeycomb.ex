@@ -34,6 +34,7 @@ defmodule ExBees.Honeycomb do
   end
 
   defp spawn_bee(index, state) do
+    # TODO: atoms are not GCed
     "Bee.#{state.name}.#{index}" |> String.to_atom |> ExBees.Bee.start_link(state.position)
   end
 end

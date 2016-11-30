@@ -11,6 +11,7 @@ defmodule ExBees.HoneycombRegistry do
 
   def init(hc_number) do
     state = for i <- 1..hc_number do
+      # TODO: atoms are not GCed
       "Honeycomb.#{i}" |> String.to_atom |> start_honeycomb
     end
     {:ok, state}

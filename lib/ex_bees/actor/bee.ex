@@ -67,7 +67,6 @@ defmodule ExBees.Bee do
     {x + 1, y + 1}
   end
 
-
   defp legal_position?({x, y}) do
     x >= 0 && x < ExBees.Map.map_width && y >= 0 && y < ExBees.Map.map_height
   end

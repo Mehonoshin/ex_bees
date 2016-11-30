@@ -57,5 +57,4 @@ defmodule ExBees.Map do
       for x <- 1..map_width, do: Point.empty({x, y})
     end
   end
-
 end
