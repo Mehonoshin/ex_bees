@@ -19,21 +19,6 @@ defmodule ExBees.Map do
     position
   end
 
-  def get(map, {x, y}) do
-    Agent.get(map, fn(m) ->
-      m
-      |> Enum.at(y)
-      |> Enum.at(x)
-    end)
-  end
-
-  def put(map, %{position: {x, y}} = entity) do
-    Agent.update(map, fn(m) ->
-      row = m |> Enum.at(y) |> List.replace_at(x, entity)
-      List.replace_at(m, y, row)
-    end)
-  end
-
   def move(map, old_position, new_position) do
     point = get(map, old_position)
     put(map, %{ExBees.Point.empty | position: old_position})
@@ -46,6 +31,21 @@ defmodule ExBees.Map do
 
   def map_height do
     Application.get_env(:ex_bees, :map_height)
+  end
+
+  defp get(map, {x, y}) do
+    Agent.get(map, fn(m) ->
+      m
+      |> Enum.at(y)
+      |> Enum.at(x)
+    end)
+  end
+
+  defp put(map, %{position: {x, y}} = entity) do
+    Agent.update(map, fn(m) ->
+      row = m |> Enum.at(y) |> List.replace_at(x, entity)
+      List.replace_at(m, y, row)
+    end)
   end
 
   defp pick_random_position(map) do
