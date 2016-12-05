@@ -1,0 +1,32 @@
+<html>
+	<head>
+		<script>
+			var socket = new WebSocket("ws://localhost:4000/ws");
+
+			socket.onopen = function() {
+				socket.send("map")
+			};
+
+			socket.onclose = function(event) {
+				if (event.wasClean) {
+					console.log('Connection closed');
+				} else {
+					console.log('Connection closed by timeout');
+				}
+				console.log('Code: ' + event.code + ' reason: ' + event.reason);
+			};
+
+			socket.onmessage = function(event) {
+				console.log("Received: " + event.data);
+			};
+
+			socket.onerror = function(error) {
+				console.log("Error " + error.message);
+			};
+
+		</script>
+	</head>
+
+	<body>
+	</body>
+</html>

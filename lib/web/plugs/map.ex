@@ -6,14 +6,16 @@ defmodule Web.Map do
   end
 
   def call(conn, _opts) do
-    map = ExBees.Map |> ExBees.Map.all |> prepare_map
     conn
-    |> put_resp_content_type("application/json")
-    |> send_resp(200, map)
+    |> put_resp_content_type("text/html")
+    |> send_resp(200, html)
   end
 
-  defp prepare_map(map) do
-    map |> List.flatten |> Enum.reject(fn(p) -> p.type == :empty end) |> Poison.encode!(map)
+  defp html do
+    case File.read("lib/web/templates/map.html") do
+      {:ok, html} -> html
+      {error, reason} -> "#{error} #{reason}"
+    end
   end
 end
 
