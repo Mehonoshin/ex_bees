@@ -1,4 +1,5 @@
 defmodule ExBees.Point do
+  @derive {Poison.Encoder, only: [:type, :position]}
   defstruct type: :empty, actor: nil, position: {0, 0}
 
   def empty do

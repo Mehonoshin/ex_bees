@@ -7,14 +7,13 @@ defmodule Web.Map do
 
   def call(conn, _opts) do
     map = ExBees.Map |> ExBees.Map.all |> prepare_map
-    IO.puts "Map: #{inspect map}"
     conn
     |> put_resp_content_type("application/json")
     |> send_resp(200, map)
   end
 
   defp prepare_map(map) do
-    Poison.encode!(map)
+    map |> List.flatten |> Enum.reject(fn(p) -> p.type == :empty end) |> Poison.encode!(map)
   end
 end
 
