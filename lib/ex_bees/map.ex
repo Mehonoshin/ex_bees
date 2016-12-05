@@ -34,6 +34,13 @@ defmodule ExBees.Map do
     end)
   end
 
+  def move(map, old_position, new_position) do
+    point = get(map, old_position)
+    point = %{point | position: new_position}
+    put(map, %{point | type: :empty, actor: nil})
+    put(map, point)
+  end
+
   def map_width do
     Application.get_env(:ex_bees, :map_width)
   end

@@ -24,13 +24,13 @@ defmodule ExBees.Bee do
     {:noreply, state}
   end
 
-  defp move(state) do
+  defp move(%{position: old_position} = state) do
     movement = Enum.at(@directions, pick_direction - 1)
 
-    position = gen_new_position(state.position, movement)
-    if legal_position?(position) do
-      state = %{state | position: position}
-      ExBees.Map.put(ExBees.Map, state)
+    new_position = gen_new_position(old_position, movement)
+    if legal_position?(new_position) do
+      ExBees.Map.move(ExBees.Map, old_position, new_position)
+      state = %{state | position: new_position}
     end
     state
   end
