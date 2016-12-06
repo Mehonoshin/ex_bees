@@ -3,9 +3,7 @@ defmodule ExBees.Bee do
 
   defstruct name: nil, honey: 0, position: {0, 0}
 
-  @tick_period 1000
   @directions [:left_up, :up, :right_up, :left, :right, :left_down, :down, :right_down]
-  @bee_step 10
 
   def start_link(name, position) do
     GenServer.start_link(__MODULE__, {name, position}, name: name)
@@ -75,7 +73,8 @@ defmodule ExBees.Bee do
   end
 
   defp tick() do
-    Process.send_after(self(), :tick, @tick_period)
+    period = Application.get_env(:ex_bees, :tick_period)
+    Process.send_after(self(), :tick, period)
   end
 
   defp pick_direction do
@@ -83,6 +82,6 @@ defmodule ExBees.Bee do
   end
 
   defp bee_step do
-    @bee_step
+    Application.get_env(:ex_bees, :bee_step)
   end
 end

@@ -6,4 +6,6 @@ config :ex_bees,
   honeycombs_number: 1,
   bees_per_honeycomb: 8,
   map_width: 1000,
-  map_height: 1000
+  map_height: 1000,
+  tick_period: 10,
+  bee_step: 100

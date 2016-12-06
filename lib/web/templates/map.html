@@ -26,6 +26,7 @@
 
 			function drawMap(canvasId, mapData) {
 				data = JSON.parse(mapData);
+				console.log("Bees " + data.length);
 
 				var c = document.getElementById(canvasId);
 				var ctx = c.getContext("2d");

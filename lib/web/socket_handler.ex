@@ -1,6 +1,5 @@
 defmodule ExBees.SocketHandler do
   @behaviour :cowboy_websocket_handler
-  @tick_period 1000
 
   def init(_, _req, _opts) do
     {:upgrade, :protocol, :cowboy_websocket}
@@ -40,6 +39,7 @@ defmodule ExBees.SocketHandler do
   end
 
   defp tick(req) do
-    Process.send_after(self(), :tick, @tick_period)
+    period = Application.get_env(:ex_bees, :tick_period)
+    Process.send_after(self(), :tick, period)
   end
 end
