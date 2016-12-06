@@ -1,5 +1,6 @@
 defmodule ExBees.SocketHandler do
   @behaviour :cowboy_websocket_handler
+  @tick_period 1000
 
   def init(_, _req, _opts) do
     {:upgrade, :protocol, :cowboy_websocket}
@@ -15,12 +16,14 @@ defmodule ExBees.SocketHandler do
   
   # Handle other messages from the browser - don't reply
   def websocket_handle({:text, "map"}, req, state) do
+    tick(req)
     {:reply, {:text, map_json}, req, state}
   end
 
   # Format and forward elixir messages to client
   def websocket_info(message, req, state) do
-    {:reply, {:text, message}, req, state}
+    tick(req)
+    {:reply, {:text, map_json}, req, state}
   end
 
   # No matter why we terminate, remove all of this pids subscriptions
@@ -34,5 +37,9 @@ defmodule ExBees.SocketHandler do
     |> List.flatten
     |> Enum.reject(fn(p) -> p.type == :empty end)
     |> Poison.encode!
+  end
+
+  defp tick(req) do
+    Process.send_after(self(), :tick, @tick_period)
   end
 end
