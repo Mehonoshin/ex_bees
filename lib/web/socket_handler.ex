@@ -20,7 +20,7 @@ defmodule ExBees.SocketHandler do
   end
 
   # Format and forward elixir messages to client
-  def websocket_info(message, req, state) do
+  def websocket_info(_message, req, state) do
     tick(req)
     {:reply, {:text, map_json}, req, state}
   end
@@ -31,14 +31,13 @@ defmodule ExBees.SocketHandler do
   end
 
   defp map_json do
-    ExBees.Map
-    |> ExBees.Map.all
+    ExBees.Map.all
     |> List.flatten
     |> Enum.reject(fn(p) -> p.type == :empty end)
     |> Poison.encode!
   end
 
-  defp tick(req) do
+  defp tick(_req) do
     period = Application.get_env(:ex_bees, :tick_period)
     Process.send_after(self(), :tick, period)
   end

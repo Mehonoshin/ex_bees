@@ -12,7 +12,7 @@ defmodule ExBees.Bee do
   # Callbacks
   
   def init({name, position}) do
-    ExBees.Map.allocate(ExBees.Map, self(), :bee, position)
+    ExBees.Map.allocate(self(), :bee, position)
     tick()
     {:ok, %ExBees.Bee{name: name, position: position}}
   end
@@ -27,9 +27,10 @@ defmodule ExBees.Bee do
     movement = Enum.at(@directions, pick_direction - 1)
 
     new_position = gen_new_position(old_position, movement)
+    IO.puts "Bee #{inspect state.name} moves to #{inspect new_position}"
     state = case legal_position?(new_position) do
       true ->
-        ExBees.Map.move(ExBees.Map, old_position, new_position)
+        ExBees.Map.move(old_position, new_position)
         %{state | position: new_position}
       false ->
         state
@@ -69,7 +70,7 @@ defmodule ExBees.Bee do
   end
 
   defp legal_position?({x, y}) do
-    x >= 0 && x < ExBees.Map.map_width && y >= 0 && y < ExBees.Map.map_height && ExBees.Map.empty?(ExBees.Map, {x, y})
+    x >= 0 && x < ExBees.Map.map_width && y >= 0 && y < ExBees.Map.map_height && ExBees.Map.empty?({x, y})
   end
 
   defp tick() do
