@@ -30,9 +30,8 @@ defmodule ExBees.Bee do
     new_position = gen_new_position(old_position, movement)
     if legal_position?(new_position) do
       ExBees.Map.move(ExBees.Map, old_position, new_position)
-      state = %{state | position: new_position}
+      %{state | position: new_position}
     end
-    state
   end
 
   defp gen_new_position({x, y}, :left_up) do
