@@ -25,6 +25,15 @@ defmodule ExBees.Map do
     put(map, %{point | position: new_position})
   end
 
+  def empty?(map, position) do
+    case get(map, position) do
+      %ExBees.Point{type: :empty} ->
+        true
+      _ ->
+        false
+    end
+  end
+
   def map_width do
     Application.get_env(:ex_bees, :map_width)
   end
