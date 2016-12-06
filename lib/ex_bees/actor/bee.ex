@@ -32,8 +32,14 @@ defmodule ExBees.Bee do
   end
 
   defp allocate_on_map(honeycomb_position) do
-    # TODO: add checking is no position is allocated, then try once more after sleep
-    ExBees.Map.allocate_bee(self(), honeycomb_position)
+    position = ExBees.Map.allocate_bee(self(), honeycomb_position)
+    case position do
+      :error ->
+        Process.sleep(tick_period)
+        allocate_on_map(honeycomb_position)
+      _ ->
+        position
+    end
   end
 
   defp gen_new_position({x, y}, :left_up) do
@@ -72,9 +78,8 @@ defmodule ExBees.Bee do
     x >= 0 && x < ExBees.Map.map_width && y >= 0 && y < ExBees.Map.map_height && ExBees.Map.empty?({x, y})
   end
 
-  defp tick() do
-    period = Application.get_env(:ex_bees, :tick_period)
-    Process.send_after(self(), :tick, period)
+  defp tick do
+    Process.send_after(self(), :tick, tick_period)
   end
 
   defp pick_direction do
@@ -83,5 +88,9 @@ defmodule ExBees.Bee do
 
   defp bee_step do
     Application.get_env(:ex_bees, :bee_step)
+  end
+
+  defp tick_period do
+    Application.get_env(:ex_bees, :tick_period)
   end
 end
