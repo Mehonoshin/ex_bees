@@ -17,16 +17,33 @@
 			};
 
 			socket.onmessage = function(event) {
-				console.log("Received: " + event.data);
+				drawMap("exBeesCanvas", event.data);
 			};
 
 			socket.onerror = function(error) {
 				console.log("Error " + error.message);
 			};
 
+			function drawMap(canvasId, mapData) {
+				data = JSON.parse(mapData);
+
+				var c = document.getElementById(canvasId);
+				var ctx = c.getContext("2d");
+
+				for (var i = 0; i < data.length; i++) {
+					var point = data[i];
+					var position = JSON.parse(point.position);
+					console.log(position);
+					ctx.fillRect(position.x, position.y, 4, 4);
+				}
+			};
+
 		</script>
 	</head>
 
 	<body>
+		<!--TODO: receive map size from server -->
+		<canvas id="exBeesCanvas" width="1000" height="1000" style="border:1px solid #000000;">
+		</canvas>
 	</body>
 </html>
