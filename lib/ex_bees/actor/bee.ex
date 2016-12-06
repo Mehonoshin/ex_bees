@@ -25,15 +25,10 @@ defmodule ExBees.Bee do
 
   defp move(%{position: old_position} = state) do
     movement = Enum.at(@directions, pick_direction - 1)
-
     new_position = gen_new_position(old_position, movement)
-    state = case legal_position?(new_position) do
-      true ->
-        ExBees.Map.move(old_position, new_position)
-        %{state | position: new_position}
-      false ->
-        state
-    end
+
+    result_position = ExBees.Map.move(old_position, new_position)
+    %{state | position: result_position}
   end
 
   defp allocate_on_map(honeycomb_position) do

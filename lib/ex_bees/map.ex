@@ -19,7 +19,7 @@ defmodule ExBees.Map do
   end
 
   def move(old_position, new_position) do
-    GenServer.cast(__MODULE__, {:move, old_position, new_position})
+    GenServer.call(__MODULE__, {:move, old_position, new_position})
   end
 
   def empty?(position) do
@@ -66,13 +66,18 @@ defmodule ExBees.Map do
     {:reply, result, state}
   end
 
-  def handle_cast({:move, old_position, new_position}, state) do
-    if legal_position?(state, new_position) do
+  def handle_call({:move, old_position, new_position}, _from, state) do
+    result_position = old_position
+    decision = legal_position?(state, new_position)
+
+    if decision do
+      result_position = new_position
       point = get(state, old_position)
       state = put(state, %{ExBees.Point.empty | position: old_position})
       state = put(state, %{point | position: new_position})
     end
-    {:noreply, state}
+
+    {:reply, result_position, state}
   end
 
   defp get(map, {x, y}) do
