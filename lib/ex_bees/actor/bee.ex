@@ -11,10 +11,10 @@ defmodule ExBees.Bee do
 
   # Callbacks
   
-  def init({name, position}) do
-    ExBees.Map.allocate(self(), :bee, position)
+  def init({name, honeycomb_position}) do
+    bee_position = allocate_on_map(honeycomb_position)
     tick()
-    {:ok, %ExBees.Bee{name: name, position: position}}
+    {:ok, %ExBees.Bee{name: name, position: bee_position}}
   end
 
   def handle_info(:tick, state) do
@@ -27,7 +27,6 @@ defmodule ExBees.Bee do
     movement = Enum.at(@directions, pick_direction - 1)
 
     new_position = gen_new_position(old_position, movement)
-    IO.puts "Bee #{inspect state.name} moves to #{inspect new_position}"
     state = case legal_position?(new_position) do
       true ->
         ExBees.Map.move(old_position, new_position)
@@ -35,6 +34,11 @@ defmodule ExBees.Bee do
       false ->
         state
     end
+  end
+
+  defp allocate_on_map(honeycomb_position) do
+    # TODO: add checking is no position is allocated, then try once more after sleep
+    ExBees.Map.allocate_bee(self(), honeycomb_position)
   end
 
   defp gen_new_position({x, y}, :left_up) do

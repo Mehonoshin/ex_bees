@@ -3,24 +3,18 @@ defmodule ExBees.Honeycomb do
 
   defstruct name: nil, bees: [], honey: 0, position: {0, 0}
 
-  # Client API
-
   def start_link(name) do
     GenServer.start_link(__MODULE__, name, name: name)
   end
 
-  def bee_destroyed(server) do
-    GenServer.cast(server, :bee_destroyed)
-  end
-
-  # Server callbacks
+  # Callbacks
 
   def init(name) do
     # TODO: Use name instead of pid
-    position = ExBees.Map.allocate(self(), :honeycomb)
-    IO.puts "Allocate #{inspect name} at #{inspect position}"
-    state = %ExBees.Honeycomb{name: name, position: position} 
+    position = ExBees.Map.allocate_honeycomb(self())
+    state = %ExBees.Honeycomb{name: name, position: position}
 
+    # TODO: emit bees after start, on timer event
     bees_number = Application.get_env(:ex_bees, :bees_per_honeycomb)
     initial_bees = for i <- 1..bees_number do
       spawn_bee(i, state)
@@ -29,12 +23,16 @@ defmodule ExBees.Honeycomb do
     {:ok, %{state | bees: initial_bees}}
   end
 
-  def handle_cast(:bee_destroyed, state) do
-    {:noreply, state}
-  end
-
   defp spawn_bee(index, state) do
     # TODO: atoms are not GCed
-    "Bee.#{state.name}.#{index}" |> String.to_atom |> ExBees.Bee.start_link(state.position)
+    "Bee.#{state.name}.#{index}"
+    |> String.to_atom
+    |> ExBees.Bee.start_link(state.position)
   end
+
+  #defp tick() do
+    #period = Application.get_env(:ex_bees, :tick_period)
+    #Process.send_after(self(), :tick, period)
+  #end
+
 end

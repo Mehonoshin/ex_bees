@@ -10,12 +10,12 @@ defmodule ExBees.Map do
     GenServer.call(__MODULE__, :all)
   end
 
-  def allocate(pid, type) do
-    GenServer.call(__MODULE__, {:allocate, {pid, type}})
+  def allocate_honeycomb(pid) do
+    GenServer.call(__MODULE__, {:allocate_honeycomb, pid})
   end
 
-  def allocate(pid, type, position) do
-    GenServer.cast(__MODULE__, {:allocate, {pid, type, position}})
+  def allocate_bee(pid, position) do
+    GenServer.call(__MODULE__, {:allocate_bee, {pid, position}})
   end
 
   def move(old_position, new_position) do
@@ -45,10 +45,20 @@ defmodule ExBees.Map do
     {:reply, state, state}
   end
 
-  def handle_call({:allocate, {pid, type}}, _from, state) do
+  def handle_call({:allocate_honeycomb, pid}, _from, state) do
     position = pick_random_position(state)
-    state = put(state, %ExBees.Point{type: type, actor: pid, position: position})
+    state = put(state, %ExBees.Point{type: :honeycomb, actor: pid, position: position})
     {:reply, position, state}
+  end
+
+  def handle_call({:allocate_bee, {pid, honeycomb_position}}, _from, state) do
+    case select_spawn_point(state, honeycomb_position) do
+      {x, y} = position ->
+        state = put(state, %ExBees.Point{type: :bee, actor: pid, position: position})
+        {:reply, position, state}
+      :error ->
+        {:reply, :error, state}
+    end
   end
 
   def handle_call({:is_empty, position}, _from, state) do
@@ -62,11 +72,6 @@ defmodule ExBees.Map do
       state = put(state, %{ExBees.Point.empty | position: old_position})
       state = put(state, %{point | position: new_position})
     end
-    {:noreply, state}
-  end
-
-  def handle_cast({:allocate, {pid, type, position}}, state) do
-    state = put(state, %ExBees.Point{type: type, actor: pid, position: position})
     {:noreply, state}
   end
 
@@ -108,5 +113,25 @@ defmodule ExBees.Map do
     for y <- 1..map_height do
       for x <- 1..map_width, do: Point.empty({x, y})
     end
+  end
+
+  defp select_spawn_point(state, honeycomb_position) do
+    spawnpoints(honeycomb_position)
+    |> Enum.find(:error, fn(position) ->
+      empty?(state, position)
+    end)
+  end
+
+  defp spawnpoints({x, y}) do
+    [
+      {x - 1, y    },
+      {x + 1, y    },
+      {x    , y - 1},
+      {x    , y + 1},
+      {x - 1, y - 1},
+      {x + 1, y + 1},
+      {x + 1, y - 1},
+      {x - 1, y + 1}
+    ]
   end
 end
