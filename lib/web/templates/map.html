@@ -30,14 +30,26 @@
 
 				var c = document.getElementById(canvasId);
 				var ctx = c.getContext("2d");
-				ctx.clearRect(0, 0, 1000, 1000);
+				ctx.fillStyle="#000000";
+				ctx.fillRect(0, 0, 1000, 1000);
 
 				for (var i = 0; i < data.length; i++) {
 					var point = data[i];
 					var position = JSON.parse(point.position);
-					ctx.fillRect(position.x, position.y, 1, 1);
+					ctx.fillStyle="#" + pointColor(point);
+					ctx.fillRect(position.x, position.y, 2, 2);
 				}
 			};
+
+			function pointColor(point) {
+				typesMapping = {
+					"honeycomb": "0800FF",
+					"bee": "F2FF00",
+					"plant": "00FF2F",
+					"trap": "FF000D"
+				}
+				return typesMapping[point.type]
+			}
 
 		</script>
 	</head>
