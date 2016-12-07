@@ -12,10 +12,7 @@ defmodule Web.Map do
   end
 
   defp html do
-    case File.read("lib/web/templates/map.html") do
-      {:ok, html} -> html
-      {error, reason} -> "#{error} #{reason}"
-    end
+    MapView.html(ExBees.Map.map_width, ExBees.Map.map_height)
   end
 end
 

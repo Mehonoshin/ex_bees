@@ -31,7 +31,7 @@
 				var c = document.getElementById(canvasId);
 				var ctx = c.getContext("2d");
 				ctx.fillStyle="#000000";
-				ctx.fillRect(0, 0, 2100, 1070);
+        ctx.fillRect(0, 0, <%= map_width %>, <%= map_height %>);
 
 				for (var i = 0; i < data.length; i++) {
 					var point = data[i];
@@ -56,7 +56,7 @@
 
 	<body>
 		<!--TODO: receive map size from server -->
-		<canvas id="exBeesCanvas" width="2100" height="1070" style="border:1px solid #000000;">
+    <canvas id="exBeesCanvas" width="<%= map_width %>" height="<%= map_height %>" style="border:1px solid #000000;">
 		</canvas>
 	</body>
 </html>
