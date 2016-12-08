@@ -5,13 +5,10 @@ defmodule ExBees.SocketHandler do
     {:upgrade, :protocol, :cowboy_websocket}
   end
 
-  # TODO: add infinite timeout
-  @timeout 60000 # terminate if no activity for one minute
-
   #Called on websocket connection initialization.
   def websocket_init(_type, req, _opts) do
     state = %{}
-    {:ok, req, state, @timeout}
+    {:ok, req, state}
   end
   
   # Handle other messages from the browser - don't reply
