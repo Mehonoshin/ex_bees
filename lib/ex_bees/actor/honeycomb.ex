@@ -14,6 +14,7 @@ defmodule ExBees.Honeycomb do
   # Callbacks
 
   def init(name) do
+    Process.flag(:trap_exit, true)
     position = ExBees.Map.allocate_honeycomb(self())
     state = %ExBees.Honeycomb{name: name, position: position}
 
@@ -30,6 +31,14 @@ defmodule ExBees.Honeycomb do
     |> ExBees.Bee.start_link(state.position)
 
     {:noreply, %{state | bees: index}}
+  end
+
+  def handle_info({:EXIT, from, reason}, state) do
+    # TODO: receive bee position
+    # make this position empty on map
+    # use logger to log such events
+    ExBees.Honeycomb.spawn_bee(self())
+    {:noreply, state}
   end
 
   defp spawn_bees do

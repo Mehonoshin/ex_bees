@@ -4,7 +4,7 @@ use Mix.Config
 
 config :ex_bees,
   honeycombs_number: 3,
-  bees_per_honeycomb: 100,
+  bees_per_honeycomb: 3,
   map_width: 2100,
   map_height: 1070,
   tick_period: 100,
