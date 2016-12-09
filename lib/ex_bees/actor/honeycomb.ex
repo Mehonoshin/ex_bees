@@ -49,7 +49,5 @@ defmodule ExBees.Honeycomb do
     end
   end
 
-  defp next_bee_index(state) do
-    state.bees + 1
-  end
+  defp next_bee_index(state), do: state.bees + 1
 end

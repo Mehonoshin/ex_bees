@@ -42,37 +42,14 @@ defmodule ExBees.Bee do
     end
   end
 
-  defp gen_new_position({x, y}, :left_up) do
-    {x - bee_step, y - bee_step}
-  end
-
-  defp gen_new_position({x, y}, :up) do
-    {x, y - bee_step}
-  end
-
-  defp gen_new_position({x, y}, :right_up) do
-    {x + bee_step, y - bee_step}
-  end
-
-  defp gen_new_position({x, y}, :left) do
-    {x - bee_step, y}
-  end
-
-  defp gen_new_position({x, y}, :right) do
-    {x + bee_step, y}
-  end
-
-  defp gen_new_position({x, y}, :left_down) do
-    {x - bee_step, y + bee_step}
-  end
-
-  defp gen_new_position({x, y}, :down) do
-    {x, y + bee_step}
-  end
-
-  defp gen_new_position({x, y}, :right_down) do
-    {x + bee_step, y + bee_step}
-  end
+  defp gen_new_position({x, y}, :left_up),    do: {x - bee_step, y - bee_step}
+  defp gen_new_position({x, y}, :up),         do: {x,            y - bee_step}
+  defp gen_new_position({x, y}, :right_up),   do: {x + bee_step, y - bee_step}
+  defp gen_new_position({x, y}, :left),       do: {x - bee_step, y}
+  defp gen_new_position({x, y}, :right),      do: {x + bee_step, y}
+  defp gen_new_position({x, y}, :left_down),  do: {x - bee_step, y + bee_step}
+  defp gen_new_position({x, y}, :down),       do: {x,            y + bee_step}
+  defp gen_new_position({x, y}, :right_down), do: {x + bee_step, y + bee_step}
 
   defp legal_position?({x, y}) do
     x >= 0 && x < ExBees.Map.map_width && y >= 0 && y < ExBees.Map.map_height && ExBees.Map.empty?({x, y})
@@ -86,11 +63,6 @@ defmodule ExBees.Bee do
     @directions |> Enum.count |> :rand.uniform
   end
 
-  defp bee_step do
-    Application.get_env(:ex_bees, :bee_step)
-  end
-
-  defp tick_period do
-    Application.get_env(:ex_bees, :tick_period)
-  end
+  defp bee_step, do: Application.get_env(:ex_bees, :bee_step)
+  defp tick_period, do: Application.get_env(:ex_bees, :tick_period)
 end
