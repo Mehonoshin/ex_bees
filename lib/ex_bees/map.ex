@@ -82,13 +82,15 @@ defmodule ExBees.Map do
 
   defp get(map, {x, y}) do
     map
-    |> Enum.at(y)
-    |> Enum.at(x)
+    |> Map.get(y)
+    |> Map.get(x)
   end
 
   defp put(map, %{position: {x, y}} = entity) do
-    row = map |> Enum.at(y) |> List.replace_at(x, entity)
-    List.replace_at(map, y, row)
+    row = map
+      |> Map.get(y)
+      |> Map.update!(x, fn(point) -> entity end)
+    Map.update!(map, y, fn(_) -> row end)
   end
 
   defp pick_random_position(state) do
@@ -115,9 +117,15 @@ defmodule ExBees.Map do
   end
 
   defp initialize_map do
-    for y <- 1..map_height do
-      for x <- 1..map_width, do: Point.empty({x, y})
-    end
+    Enum.reduce(0..map_height - 1, %{}, fn(y, acc) ->
+      Map.put(acc, y, numered_map(map_width))
+    end)
+  end
+
+  defp numered_map(size) do
+    Enum.reduce(0..size - 1, %{}, fn(i, acc) ->
+      Map.put(acc, i, ExBees.Point.empty)
+    end)
   end
 
   defp select_spawn_point(state, honeycomb_position) do

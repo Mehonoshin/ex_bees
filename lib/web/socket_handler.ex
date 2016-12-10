@@ -29,7 +29,9 @@ defmodule ExBees.SocketHandler do
   end
 
   defp map_json do
-    ExBees.Map.all
+    r = ExBees.Map.all
+    |> Map.values
+    |> Enum.reduce([], fn(row, acc) -> [acc | Map.values(row)] end)
     |> List.flatten
     |> Enum.reject(fn(p) -> p.type == :empty end)
     |> Poison.encode!
