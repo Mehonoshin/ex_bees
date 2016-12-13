@@ -1,4 +1,5 @@
 defmodule ExBees.Honeycomb do
+  require Logger
   use GenServer
 
   defstruct name: nil, bees: 0, honey: 0, position: {0, 0}
@@ -25,8 +26,10 @@ defmodule ExBees.Honeycomb do
   def handle_cast(:spawn_bee, state) do
     index = next_bee_index(state)
 
-    # TODO: monitor bees
-    "Bee.#{state.name}.#{index}"
+    bee_name = "Bee.#{state.name}.#{index}"
+    Logger.info("Spawn bee #{bee_name}")
+
+    bee_name
     |> String.to_atom
     |> ExBees.Bee.start_link(state.position)
 
@@ -37,6 +40,7 @@ defmodule ExBees.Honeycomb do
     # TODO: receive bee position
     # make this position empty on map
     # use logger to log such events
+    Logger.info("Bee #{inspect from} dead")
     ExBees.Honeycomb.spawn_bee(self())
     {:noreply, state}
   end

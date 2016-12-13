@@ -7,5 +7,8 @@ config :ex_bees,
   bees_per_honeycomb: 50,
   map_width: 1000,
   map_height: 1000,
-  tick_period: 100,
+  tick_period: 10,
   bee_step: 1
+
+config :logger,
+  backends: [:console]
