@@ -37,10 +37,9 @@ defmodule ExBees.Honeycomb do
   end
 
   def handle_info({:EXIT, from, reason}, state) do
-    # TODO: receive bee position
-    # make this position empty on map
-    # use logger to log such events
     Logger.info("Bee #{inspect from} dead")
+
+    ExBees.Map.disallocate_actor(from)
     ExBees.Honeycomb.spawn_bee(self())
     {:noreply, state}
   end

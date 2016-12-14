@@ -22,6 +22,10 @@ defmodule ExBees.Map do
     GenServer.call(__MODULE__, {:move, old_position, new_position})
   end
 
+  def disallocate_actor(pid) do
+    GenServer.cast(__MODULE__, {:disallocate_actor, pid})
+  end
+
   def empty?(position) do
     GenServer.call(__MODULE__, {:is_empty, position})
   end
@@ -78,6 +82,22 @@ defmodule ExBees.Map do
     end
 
     {:reply, result_position, state}
+  end
+
+  def handle_cast({:disallocate_actor, pid}, state) do
+    point = state
+      |> actors_list
+      |> Enum.find(nil, fn(item) -> item.actor == pid end)
+
+    state = put(state, %{ExBees.Point.empty | position: point.position})
+    {:noreply, state}
+  end
+
+  defp actors_list(state) do
+    state
+    |> Map.values
+    |> Enum.reduce([], fn(row, acc) -> [acc | Map.values(row)] end)
+    |> List.flatten
   end
 
   defp get(map, {x, y}) do
