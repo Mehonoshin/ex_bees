@@ -1,6 +1,7 @@
 defmodule ExBees.HoneycombRegistry do
   use GenServer
 
+  # TODO: it should be a supervisor
   # API
   def start_link(name) do
     hc_number = Application.get_env(:ex_bees, :honeycombs_number)

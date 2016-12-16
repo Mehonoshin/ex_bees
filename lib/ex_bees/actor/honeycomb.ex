@@ -1,5 +1,6 @@
 defmodule ExBees.Honeycomb do
   require Logger
+  # TODO: honeycomb seems to be a supervisor for bees
   use GenServer
 
   defstruct name: nil, bees: 0, honey: 0, position: {0, 0}
