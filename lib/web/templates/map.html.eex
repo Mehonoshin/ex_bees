@@ -55,7 +55,6 @@
 	</head>
 
 	<body>
-		<!--TODO: receive map size from server -->
     <canvas id="exBeesCanvas" width="<%= map_width %>" height="<%= map_height %>" style="border:1px solid #000000;">
 		</canvas>
 	</body>

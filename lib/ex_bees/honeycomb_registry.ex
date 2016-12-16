@@ -21,6 +21,4 @@ defmodule ExBees.HoneycombRegistry do
     {:ok, pid} = ExBees.Honeycomb.start_link(name)
     pid
   end
-
-  # TODO: add monitor here to process honeycomb crash
 end
