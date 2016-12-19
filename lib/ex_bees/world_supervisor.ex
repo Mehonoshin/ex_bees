@@ -8,7 +8,7 @@ defmodule ExBees.WorldSupervisor do
   def init(:ok) do
     children = [
       worker(ExBees.Map, [ExBees.Map]),
-      worker(ExBees.HoneycombRegistry, [ExBees.HoneycombRegistry])
+      supervisor(ExBees.HoneycombSupervisor, [ExBees.HoneycombSupervisor])
     ]
 
     supervise(children, strategy: :one_for_one)
