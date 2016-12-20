@@ -56,6 +56,7 @@ defmodule ExBees.Map do
   end
 
   def handle_call({:allocate_bee, {pid, honeycomb_position}}, _from, state) do
+    Process.monitor(pid)
     case select_spawn_point(state, honeycomb_position) do
       {x, y} = position ->
         state = put(state, %ExBees.Point{type: :bee, actor: pid, position: position})
@@ -84,12 +85,16 @@ defmodule ExBees.Map do
     {:reply, result_position, state}
   end
 
-  def handle_cast({:disallocate_actor, pid}, state) do
+  def disallocate_actor(pid, state) do
     point = state
       |> actors_list
       |> Enum.find(nil, fn(item) -> item.actor == pid end)
 
     state = put(state, %{ExBees.Point.empty | position: point.position})
+  end
+
+  def handle_info({:DOWN, ref, :process, pid, _reason}, state) do
+    IO.puts "Actor #{inspect pid} is down"
     {:noreply, state}
   end
 
