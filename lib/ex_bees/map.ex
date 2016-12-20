@@ -85,17 +85,17 @@ defmodule ExBees.Map do
     {:reply, result_position, state}
   end
 
-  def disallocate_actor(pid, state) do
+  def handle_info({:DOWN, ref, :process, pid, _reason}, state) do
+    state = disallocate_actor(pid, state)
+    {:noreply, state}
+  end
+
+  defp disallocate_actor(pid, state) do
     point = state
       |> actors_list
       |> Enum.find(nil, fn(item) -> item.actor == pid end)
 
-    state = put(state, %{ExBees.Point.empty | position: point.position})
-  end
-
-  def handle_info({:DOWN, ref, :process, pid, _reason}, state) do
-    IO.puts "Actor #{inspect pid} is down"
-    {:noreply, state}
+    put(state, %{ExBees.Point.empty | position: point.position})
   end
 
   defp actors_list(state) do
