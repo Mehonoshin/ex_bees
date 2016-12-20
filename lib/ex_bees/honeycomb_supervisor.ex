@@ -9,9 +9,14 @@ defmodule ExBees.HoneycombSupervisor do
   def init(hc_number) do
     children = for i <- 1..hc_number do
       name = String.to_atom("Honeycomb.#{i}")
-      worker(ExBees.Honeycomb, [name])
+      supervisor(ExBees.Honeycomb, [name])
     end
 
     supervise(children, strategy: :one_for_one)
+  end
+
+  def handle_info({:EXIT, from, reason}, state) do
+    IO.puts "HC is down #{inspect from}"
+    {:noreply, state}
   end
 end
