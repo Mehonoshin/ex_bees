@@ -22,12 +22,12 @@ defmodule ExBees.Map do
     GenServer.call(__MODULE__, {:move, old_position, new_position})
   end
 
-  def disallocate_actor(pid) do
-    GenServer.cast(__MODULE__, {:disallocate_actor, pid})
-  end
-
   def empty?(position) do
     GenServer.call(__MODULE__, {:is_empty, position})
+  end
+
+  def disallocate_actor(pid) do
+    GenServer.cast(__MODULE__, {:disallocate_actor, pid})
   end
 
   def map_width do
@@ -50,6 +50,7 @@ defmodule ExBees.Map do
   end
 
   def handle_call({:allocate_honeycomb, pid}, _from, state) do
+    Process.monitor(pid)
     position = pick_random_position(state)
     state = put(state, %ExBees.Point{type: :honeycomb, actor: pid, position: position})
     {:reply, position, state}
@@ -85,17 +86,24 @@ defmodule ExBees.Map do
     {:reply, result_position, state}
   end
 
-  def handle_info({:DOWN, ref, :process, pid, _reason}, state) do
-    state = disallocate_actor(pid, state)
+  def handle_cast({:disallocate_actor, pid}, state) do
+    point = point_by_pid(pid, state)
+    if point != nil do
+      state = put(state, %{ExBees.Point.empty | position: point.position})
+    end
     {:noreply, state}
   end
 
-  defp disallocate_actor(pid, state) do
-    point = state
-      |> actors_list
-      |> Enum.find(nil, fn(item) -> item.actor == pid end)
+  def handle_info({:DOWN, ref, :process, pid, _reason}, state) do
+    # TODO: probably should demonitor process
+    disallocate_actor(pid)
+    {:noreply, state}
+  end
 
-    put(state, %{ExBees.Point.empty | position: point.position})
+  defp point_by_pid(pid, state) do
+    state
+    |> actors_list
+    |> Enum.find(nil, fn(item) -> item.actor == pid end)
   end
 
   defp actors_list(state) do

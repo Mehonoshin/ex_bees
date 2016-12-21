@@ -9,7 +9,7 @@ defmodule ExBees.HoneycombSupervisor do
   def init(hc_number) do
     children = for i <- 1..hc_number do
       name = String.to_atom("Honeycomb.#{i}")
-      supervisor(ExBees.Honeycomb, [name])
+      supervisor(ExBees.Honeycomb, [name], id: name)
     end
 
     supervise(children, strategy: :one_for_one)
