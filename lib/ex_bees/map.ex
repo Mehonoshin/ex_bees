@@ -3,6 +3,7 @@ defmodule ExBees.Map do
   alias ExBees.Point
 
   defstruct map: %{}, pids: %{}
+  @ets_table_name :exbees_actors
 
   def start_link(name) do
     GenServer.start_link(__MODULE__, [], name: name)
