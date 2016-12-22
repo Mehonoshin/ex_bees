@@ -2,6 +2,8 @@ defmodule ExBees.Map do
   use GenServer
   alias ExBees.Point
 
+  defstruct map: %{}, pids: %{}
+
   def start_link(name) do
     GenServer.start_link(__MODULE__, [], name: name)
   end
@@ -41,12 +43,12 @@ defmodule ExBees.Map do
   # Callbacks
   
   def init(_) do
-    state = initialize_map
+    state = %ExBees.Map{map: initialize_map}
     {:ok, state}
   end
 
   def handle_call(:all, _from, state) do
-    {:reply, state, state}
+    {:reply, state.map, state}
   end
 
   def handle_call({:allocate_honeycomb, pid}, _from, state) do
@@ -101,29 +103,30 @@ defmodule ExBees.Map do
   end
 
   defp point_by_pid(pid, state) do
-    state
+    state.map
     |> actors_list
     |> Enum.find(nil, fn(item) -> item.actor == pid end)
   end
 
-  defp actors_list(state) do
-    state
+  defp actors_list(map) do
+    map
     |> Map.values
     |> Enum.reduce([], fn(row, acc) -> [acc | Map.values(row)] end)
     |> List.flatten
   end
 
-  defp get(map, {x, y}) do
-    map
+  defp get(state, {x, y}) do
+    state.map
     |> Map.get(y)
     |> Map.get(x)
   end
 
-  defp put(map, %{position: {x, y}} = entity) do
-    row = map
+  defp put(state, %{position: {x, y}} = entity) do
+    row = state.map
       |> Map.get(y)
       |> Map.update!(x, fn(point) -> entity end)
-    Map.update!(map, y, fn(_) -> row end)
+    map = Map.update!(state.map, y, fn(_) -> row end)
+    %{state | map: map}
   end
 
   defp pick_random_position(state) do

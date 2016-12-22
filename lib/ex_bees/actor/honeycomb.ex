@@ -1,8 +1,6 @@
 defmodule ExBees.Honeycomb do
   use Supervisor
 
-  defstruct name: nil, bees: 0, honey: 0, position: {0, 0}
-
   def start_link(hc_name) do
     Supervisor.start_link(__MODULE__, hc_name, name: hc_name)
   end

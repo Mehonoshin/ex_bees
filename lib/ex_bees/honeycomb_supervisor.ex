@@ -14,9 +14,4 @@ defmodule ExBees.HoneycombSupervisor do
 
     supervise(children, strategy: :one_for_one)
   end
-
-  def handle_info({:EXIT, from, reason}, state) do
-    IO.puts "HC is down #{inspect from}"
-    {:noreply, state}
-  end
 end
