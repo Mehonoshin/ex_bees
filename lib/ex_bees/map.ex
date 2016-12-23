@@ -76,7 +76,7 @@ defmodule ExBees.Map do
     if decision do
       result_position = new_position
       point = get(old_position)
-      put(%{ExBees.Point.empty | position: old_position})
+      :ets.delete(@ets_table_name, old_position)
       put(%{point | position: new_position})
     end
 
@@ -84,7 +84,7 @@ defmodule ExBees.Map do
   end
 
   def handle_cast({:disallocate_actor, pid}, state) do
-    IO.puts "RES: #{inspect point_by_pid(pid)}"
+    IO.puts "RES: #{inspect pid}"
     case point_by_pid(pid) do
       {_, _} = position -> IO.puts "Remove point #{inspect position}"
       nil -> IO.puts "No such pid"
