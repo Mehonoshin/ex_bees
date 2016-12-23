@@ -2,7 +2,6 @@ defmodule ExBees.Map do
   use GenServer
   alias ExBees.Point
 
-  defstruct map: %{}, pids: %{}
   @ets_table_name :exbees_actors
 
   def start_link(name) do
@@ -44,26 +43,27 @@ defmodule ExBees.Map do
   # Callbacks
   
   def init(_) do
-    state = %ExBees.Map{map: initialize_map}
-    {:ok, state}
+    # TODO: change to protected
+    :ets.new(@ets_table_name, [:named_table, :set, :public])
+    {:ok, []}
   end
 
   def handle_call(:all, _from, state) do
-    {:reply, state.map, state}
+    {:reply, all_points, state}
   end
 
   def handle_call({:allocate_honeycomb, pid}, _from, state) do
     Process.monitor(pid)
-    position = pick_random_position(state)
-    state = put(state, %ExBees.Point{type: :honeycomb, actor: pid, position: position})
+    position = pick_random_position
+    state = put(%ExBees.Point{type: :honeycomb, actor: pid, position: position})
     {:reply, position, state}
   end
 
   def handle_call({:allocate_bee, {pid, honeycomb_position}}, _from, state) do
     Process.monitor(pid)
-    case select_spawn_point(state, honeycomb_position) do
+    case select_spawn_point(honeycomb_position) do
       {x, y} = position ->
-        state = put(state, %ExBees.Point{type: :bee, actor: pid, position: position})
+        put(%ExBees.Point{type: :bee, actor: pid, position: position})
         {:reply, position, state}
       :error ->
         {:reply, :error, state}
@@ -71,29 +71,30 @@ defmodule ExBees.Map do
   end
 
   def handle_call({:is_empty, position}, _from, state) do
-    result = empty?(state, position)
+    result = is_empty?(position)
     {:reply, result, state}
   end
 
   def handle_call({:move, old_position, new_position}, _from, state) do
     result_position = old_position
-    decision = legal_position?(state, new_position)
+    decision = legal_position?(new_position)
 
     if decision do
       result_position = new_position
-      point = get(state, old_position)
-      state = put(state, %{ExBees.Point.empty | position: old_position})
-      state = put(state, %{point | position: new_position})
+      point = get(old_position)
+      put(%{ExBees.Point.empty | position: old_position})
+      put(%{point | position: new_position})
     end
 
     {:reply, result_position, state}
   end
 
   def handle_cast({:disallocate_actor, pid}, state) do
-    point = point_by_pid(pid, state)
-    if point != nil do
-      state = put(state, %{ExBees.Point.empty | position: point.position})
-    end
+    #point = point_by_pid(pid)
+    #if point != nil do
+      #put(%{ExBees.Point.empty | position: point.position})
+    #end
+    IO.puts "Disallocate actor #{inspect pid}"
     {:noreply, state}
   end
 
@@ -103,49 +104,42 @@ defmodule ExBees.Map do
     {:noreply, state}
   end
 
-  defp point_by_pid(pid, state) do
-    state.map
-    |> actors_list
-    |> Enum.find(nil, fn(item) -> item.actor == pid end)
+  defp point_by_pid(pid) do
+    Enum.find(all, nil, fn(item) -> item.actor == pid end)
   end
 
-  defp actors_list(map) do
-    map
-    |> Map.values
-    |> Enum.reduce([], fn(row, acc) -> [acc | Map.values(row)] end)
-    |> List.flatten
+  defp all_points do
+    tuple_list = :ets.tab2list(:exbees_actors)
+    Enum.map(tuple_list, fn({_, p}) -> p end)
   end
 
-  defp get(state, {x, y}) do
-    state.map
-    |> Map.get(y)
-    |> Map.get(x)
+  defp get(position) do
+     case List.last(:ets.lookup(@ets_table_name, position)) do
+       {_, entity} -> entity
+       nil -> ExBees.Point.empty(position)
+     end
   end
 
-  defp put(state, %{position: {x, y}} = entity) do
-    row = state.map
-      |> Map.get(y)
-      |> Map.update!(x, fn(point) -> entity end)
-    map = Map.update!(state.map, y, fn(_) -> row end)
-    %{state | map: map}
+  defp put(entity) do
+    :ets.insert(@ets_table_name, {entity.position, entity})
   end
 
-  defp pick_random_position(state) do
+  defp pick_random_position do
     position = {:rand.uniform(map_width - 1), :rand.uniform(map_height - 1)}
-    case get(state, position) do
+    case get(position) do
       %ExBees.Point{type: :empty} ->
         position
       _ ->
-        pick_random_position(state)
+        pick_random_position
     end
   end
 
-  defp legal_position?(state, {x, y}) do
-    x >= 0 && x < ExBees.Map.map_width && y >= 0 && y < ExBees.Map.map_height && empty?(state, {x, y})
+  defp legal_position?({x, y}) do
+    x >= 0 && x < ExBees.Map.map_width && y >= 0 && y < ExBees.Map.map_height && is_empty?({x, y})
   end
 
-  defp empty?(state, position) do
-    case get(state, position) do
+  defp is_empty?(position) do
+    case get(position) do
       %ExBees.Point{type: :empty} ->
         true
       _ ->
@@ -153,22 +147,10 @@ defmodule ExBees.Map do
     end
   end
 
-  defp initialize_map do
-    Enum.reduce(0..map_height - 1, %{}, fn(y, acc) ->
-      Map.put(acc, y, numered_map(map_width))
-    end)
-  end
-
-  defp numered_map(size) do
-    Enum.reduce(0..size - 1, %{}, fn(i, acc) ->
-      Map.put(acc, i, ExBees.Point.empty)
-    end)
-  end
-
-  defp select_spawn_point(state, honeycomb_position) do
+  defp select_spawn_point(honeycomb_position) do
     spawnpoints(honeycomb_position)
     |> Enum.find(:error, fn(position) ->
-      empty?(state, position)
+      is_empty?(position)
     end)
   end
 
