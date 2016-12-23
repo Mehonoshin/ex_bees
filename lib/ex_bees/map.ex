@@ -32,19 +32,13 @@ defmodule ExBees.Map do
     GenServer.cast(__MODULE__, {:disallocate_actor, pid})
   end
 
-  def map_width do
-    Application.get_env(:ex_bees, :map_width)
-  end
-
-  def map_height do
-    Application.get_env(:ex_bees, :map_height)
-  end
+  def map_width, do: Application.get_env(:ex_bees, :map_width)
+  def map_height, do: Application.get_env(:ex_bees, :map_height)
 
   # Callbacks
   
   def init(_) do
-    # TODO: change to protected
-    :ets.new(@ets_table_name, [:named_table, :set, :public])
+    :ets.new(@ets_table_name, [:named_table, :set, :protected])
     {:ok, []}
   end
 
@@ -54,9 +48,9 @@ defmodule ExBees.Map do
 
   def handle_call({:allocate_honeycomb, pid}, _from, state) do
     Process.monitor(pid)
-    position = pick_random_position
-    state = put(%ExBees.Point{type: :honeycomb, actor: pid, position: position})
-    {:reply, position, state}
+    point = %ExBees.Point{type: :honeycomb, actor: pid, position: pick_random_position}
+    put(point)
+    {:reply, point.position, state}
   end
 
   def handle_call({:allocate_bee, {pid, honeycomb_position}}, _from, state) do
@@ -90,11 +84,11 @@ defmodule ExBees.Map do
   end
 
   def handle_cast({:disallocate_actor, pid}, state) do
-    #point = point_by_pid(pid)
-    #if point != nil do
-      #put(%{ExBees.Point.empty | position: point.position})
-    #end
-    IO.puts "Disallocate actor #{inspect pid}"
+    IO.puts "RES: #{inspect point_by_pid(pid)}"
+    case point_by_pid(pid) do
+      {_, _} = position -> IO.puts "Remove point #{inspect position}"
+      nil -> IO.puts "No such pid"
+    end
     {:noreply, state}
   end
 
@@ -105,32 +99,32 @@ defmodule ExBees.Map do
   end
 
   defp point_by_pid(pid) do
-    Enum.find(all, nil, fn(item) -> item.actor == pid end)
+    r = :ets.match(@ets_table_name, {:"$1", 1, :"_"})
+    IO.puts "R: #{inspect r}"
+    List.first(List.flatten(r))
   end
 
   defp all_points do
     tuple_list = :ets.tab2list(:exbees_actors)
-    Enum.map(tuple_list, fn({_, p}) -> p end)
+    Enum.map(tuple_list, fn({_, _, p}) -> p end)
   end
 
   defp get(position) do
      case List.last(:ets.lookup(@ets_table_name, position)) do
-       {_, entity} -> entity
+       {_, _, entity} -> entity
        nil -> ExBees.Point.empty(position)
      end
   end
 
   defp put(entity) do
-    :ets.insert(@ets_table_name, {entity.position, entity})
+    :ets.insert(@ets_table_name, {entity.position, entity.actor, entity})
   end
 
   defp pick_random_position do
     position = {:rand.uniform(map_width - 1), :rand.uniform(map_height - 1)}
     case get(position) do
-      %ExBees.Point{type: :empty} ->
-        position
-      _ ->
-        pick_random_position
+      %ExBees.Point{type: :empty} -> position
+      _ -> pick_random_position
     end
   end
 
@@ -140,10 +134,8 @@ defmodule ExBees.Map do
 
   defp is_empty?(position) do
     case get(position) do
-      %ExBees.Point{type: :empty} ->
-        true
-      _ ->
-        false
+      %ExBees.Point{type: :empty} -> true
+      _ -> false
     end
   end
 
