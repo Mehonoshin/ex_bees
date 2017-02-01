@@ -8,7 +8,8 @@ config :ex_bees,
   map_width: 1000,
   map_height: 1000,
   tick_period: 100,
-  bee_step: 5
+  bee_step: 5,
+  http_port: 5000
 
 config :logger,
   backends: [:console]

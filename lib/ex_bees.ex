@@ -5,7 +5,10 @@ defmodule ExBees do
     import Supervisor.Spec
 
     children = [
-      Plug.Adapters.Cowboy.child_spec(:http, Web.Router, [], [dispatch: dispatch]),
+      Plug.Adapters.Cowboy.child_spec(:http, Web.Router, [], [
+        dispatch: dispatch,
+        port: Application.get_env(:ex_bees, :http_port)
+      ]),
       supervisor(ExBees.WorldSupervisor, [ExBees.WorldSupervisor])
     ]
 

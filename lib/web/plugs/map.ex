@@ -12,7 +12,11 @@ defmodule Web.Map do
   end
 
   defp html do
-    MapView.html(ExBees.Map.map_width, ExBees.Map.map_height)
+    MapView.html(ExBees.Map.map_width, ExBees.Map.map_height, http_port)
+  end
+
+  defp http_port do
+    Application.get_env(:ex_bees, :http_port)
   end
 end
 
