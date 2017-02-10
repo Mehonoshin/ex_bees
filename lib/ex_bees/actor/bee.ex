@@ -10,7 +10,7 @@ defmodule ExBees.Bee do
   end
 
   # Callbacks
-  
+
   def init({name, honeycomb_position}) do
     bee_position = allocate_on_map(honeycomb_position)
     tick()
@@ -27,12 +27,12 @@ defmodule ExBees.Bee do
     movement = Enum.at(@directions, pick_direction - 1)
     new_position = gen_new_position(old_position, movement)
 
-    result_position = ExBees.Map.move(old_position, new_position)
+    result_position = ExBees.Map.Broker.move(old_position, new_position)
     %{state | position: result_position}
   end
 
   defp allocate_on_map(honeycomb_position) do
-    position = ExBees.Map.allocate_bee(self(), honeycomb_position)
+    position = ExBees.Map.Broker.allocate_bee(self(), honeycomb_position)
     case position do
       :error ->
         Process.sleep(tick_period)
@@ -52,7 +52,7 @@ defmodule ExBees.Bee do
   defp gen_new_position({x, y}, :right_down), do: {x + bee_step, y + bee_step}
 
   defp legal_position?({x, y}) do
-    x >= 0 && x < ExBees.Map.map_width && y >= 0 && y < ExBees.Map.map_height && ExBees.Map.empty?({x, y})
+    x >= 0 && x < ExBees.Map.Broker.map_width && y >= 0 && y < ExBees.Map.Broker.map_height && ExBees.Map.Broker.empty?({x, y})
   end
 
   defp tick do

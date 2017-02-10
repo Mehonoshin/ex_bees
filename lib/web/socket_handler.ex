@@ -29,7 +29,7 @@ defmodule ExBees.SocketHandler do
   end
 
   defp map_json do
-    ExBees.Map.all
+    ExBees.Map.Broker.all
     |> Enum.reject(fn(p) -> p.type == :empty end)
     |> Poison.encode!
   end

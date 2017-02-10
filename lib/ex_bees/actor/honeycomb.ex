@@ -7,7 +7,7 @@ defmodule ExBees.Honeycomb do
 
   def init(hc_name) do
     # TODO: keep position at state agent
-    position = ExBees.Map.allocate_honeycomb(self())
+    position = ExBees.Map.Broker.allocate_honeycomb(self())
 
     children = for index <- 1..bees_number do
       bee_name = "Bee.#{hc_name}.#{index}" |> String.to_atom

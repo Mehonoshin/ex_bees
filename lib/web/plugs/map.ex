@@ -12,7 +12,7 @@ defmodule Web.Map do
   end
 
   defp html do
-    MapView.html(ExBees.Map.map_width, ExBees.Map.map_height, http_port)
+    MapView.html(ExBees.Map.Broker.map_width, ExBees.Map.Broker.map_height, http_port)
   end
 
   defp http_port do

@@ -1,6 +1,7 @@
-defmodule ExBees.Map do
+defmodule ExBees.Map.Segment do
   use GenServer
   alias ExBees.Point
+  import ExBees.Map.Broker
 
   @ets_table_name :exbees_actors
 
@@ -8,35 +9,8 @@ defmodule ExBees.Map do
     GenServer.start_link(__MODULE__, [], name: name)
   end
 
-  def all do
-    GenServer.call(__MODULE__, :all)
-  end
-
-  def allocate_honeycomb(pid) do
-    GenServer.call(__MODULE__, {:allocate_honeycomb, pid})
-  end
-
-  def allocate_bee(pid, position) do
-    GenServer.call(__MODULE__, {:allocate_bee, {pid, position}})
-  end
-
-  def move(old_position, new_position) do
-    GenServer.call(__MODULE__, {:move, old_position, new_position})
-  end
-
-  def empty?(position) do
-    GenServer.call(__MODULE__, {:is_empty, position})
-  end
-
-  def disallocate_actor(pid) do
-    GenServer.cast(__MODULE__, {:disallocate_actor, pid})
-  end
-
-  def map_width, do: Application.get_env(:ex_bees, :map_width)
-  def map_height, do: Application.get_env(:ex_bees, :map_height)
-
   # Callbacks
-  
+
   def init(_) do
     :ets.new(@ets_table_name, [:named_table, :set, :protected])
     {:ok, []}
@@ -129,7 +103,7 @@ defmodule ExBees.Map do
   end
 
   defp legal_position?({x, y}) do
-    x >= 0 && x < ExBees.Map.map_width && y >= 0 && y < ExBees.Map.map_height && is_empty?({x, y})
+    x >= 0 && x < ExBees.Map.Broker.map_width && y >= 0 && y < ExBees.Map.Broker.map_height && is_empty?({x, y})
   end
 
   defp is_empty?(position) do
