@@ -34,13 +34,13 @@ defmodule ExBees.Map.Broker do
     segments_number(map_height, map_height)
   end
 
-  defp segments_number(map_height, map_height) when map_height == map_height do
-    horizontal_segments(map_width) * vertical_segments(map_height)
+  def segments_number(width, height) do
+    round(horizontal_segments(width) * vertical_segments(height))
   end
 
   defp horizontal_segments(width), do: roundize(width / @segment_width)
   defp vertical_segments(height), do: roundize(height / @segment_height)
 
-  defp roundize(val) when val > 1, do: val
+  defp roundize(val) when val > 1, do: Float.ceil(val)
   defp roundize(val) when val <= 1, do: 0
 end
